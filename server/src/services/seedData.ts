@@ -8,6 +8,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P001",
     name: "Meena Iyer",
+    email: "meena.iyer@example-mail.com",
     age: 70,
     distanceKm: 45,
     totalAppointmentCount: 10,
@@ -20,6 +21,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P002",
     name: "Suresh Nair",
+    email: "suresh.nair@example-mail.com",
     age: 66,
     distanceKm: 30,
     totalAppointmentCount: 9,
@@ -32,6 +34,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P003",
     name: "Kavitha Raman",
+    email: "kavitha.raman@example-mail.com",
     age: 68,
     distanceKm: 50,
     totalAppointmentCount: 6,
@@ -44,6 +47,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P004",
     name: "Vikram Singh",
+    email: "vikram.singh@example-mail.com",
     age: 29,
     distanceKm: 25,
     totalAppointmentCount: 8,
@@ -56,6 +60,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P005",
     name: "Priya Nambiar",
+    email: "priya.nambiar@example-mail.com",
     age: 50,
     distanceKm: 5,
     totalAppointmentCount: 9,
@@ -70,6 +75,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P006",
     name: "Anitha Krishnan",
+    email: "anitha.krishnan@example-mail.com",
     age: 33,
     distanceKm: 22,
     totalAppointmentCount: 10,
@@ -82,6 +88,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P007",
     name: "Ganesh Pillai",
+    email: "ganesh.pillai@example-mail.com",
     age: 62,
     distanceKm: 45,
     totalAppointmentCount: 8,
@@ -94,6 +101,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P008",
     name: "Rukmini Bhat",
+    email: "rukmini.bhat@example-mail.com",
     age: 67,
     distanceKm: 18,
     totalAppointmentCount: 11,
@@ -106,6 +114,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P009",
     name: "Dinesh Rao",
+    email: "dinesh.rao@example-mail.com",
     age: 45,
     distanceKm: 28,
     totalAppointmentCount: 14,
@@ -118,6 +127,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P010",
     name: "Latha Menon",
+    email: "latha.menon@example-mail.com",
     age: 29,
     distanceKm: 10,
     totalAppointmentCount: 11,
@@ -132,6 +142,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P011",
     name: "Manoj Varma",
+    email: "manoj.varma@example-mail.com",
     age: 40,
     distanceKm: 8,
     totalAppointmentCount: 10,
@@ -144,6 +155,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P012",
     name: "Divya Suresh",
+    email: "divya.suresh@example-mail.com",
     age: 25,
     distanceKm: 5,
     totalAppointmentCount: 6,
@@ -156,6 +168,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P013",
     name: "Bhaskar Reddy",
+    email: "bhaskar.reddy@example-mail.com",
     age: 50,
     distanceKm: 30,
     totalAppointmentCount: 9,
@@ -168,6 +181,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P014",
     name: "Shanti Devi",
+    email: "shanti.devi@example-mail.com",
     age: 70,
     distanceKm: 15,
     totalAppointmentCount: 7,
@@ -180,6 +194,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P015",
     name: "Naveen Kumar",
+    email: "naveen.kumar@example-mail.com",
     age: 33,
     distanceKm: 12,
     totalAppointmentCount: 12,
@@ -194,6 +209,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P016",
     name: "Ajay Menon",
+    email: "ajay.menon@example-mail.com",
     age: 28,
     distanceKm: 10,
     totalAppointmentCount: 0,
@@ -206,6 +222,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P017",
     name: "Fathima Beevi",
+    email: "fathima.beevi@example-mail.com",
     age: 55,
     distanceKm: 20,
     totalAppointmentCount: 1,
@@ -218,6 +235,7 @@ export const seedPatients: Patient[] = [
   {
     id: "P018",
     name: "Karthik Subramanian",
+    email: "karthik.subramanian@example-mail.com",
     age: 60,
     distanceKm: 35,
     totalAppointmentCount: 1,

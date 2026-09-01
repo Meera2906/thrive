@@ -11,6 +11,10 @@ export interface Patient {
   expectedFrequencyDays: number;
   treatmentElapsedDays: number;
   treatmentTotalDays: number;
+  /** Optional — populated from seed data or bulk CSV upload. Needed for the
+   * bulk-email feature; patients without an email are simply skipped when
+   * sending, never blocked from scoring/ranking. */
+  email?: string | null;
 }
 
 /** One of the six scoring factors, always present in the breakdown

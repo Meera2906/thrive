@@ -18,6 +18,8 @@ interface Props {
   viewBox?: string;
   width?: string | number;
   height?: string | number;
+  /** Explicit scroll progress override (0 to 1) */
+  progress?: number;
 }
 
 export default function ScrollDrawLine({
@@ -28,13 +30,28 @@ export default function ScrollDrawLine({
   viewBox = "0 0 800 400",
   width = "100%",
   height = "100%",
+  progress: explicitProgress,
 }: Props) {
   const pathRef = useRef<SVGPathElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const visibleRef = useRef(false);
 
+  // If explicitProgress is provided, update path style directly on progress change
   useEffect(() => {
+    if (explicitProgress === undefined) return;
+    const path = pathRef.current;
+    if (!path) return;
+
+    const totalLength = path.getTotalLength();
+    path.style.strokeDasharray = `${totalLength}`;
+    const p = Math.min(1, Math.max(0, explicitProgress));
+    path.style.strokeDashoffset = `${totalLength * (1 - p)}`;
+  }, [explicitProgress, d]);
+
+  useEffect(() => {
+    if (explicitProgress !== undefined) return;
+
     const path = pathRef.current;
     const section = sectionRef.current;
     if (!path || !section) return;
@@ -68,11 +85,12 @@ export default function ScrollDrawLine({
       const rect = section!.getBoundingClientRect();
       const viewportH = window.innerHeight;
 
-      // progress 0 when section top enters viewport from bottom
-      // progress 1 when section bottom enters viewport from bottom
+      const start = viewportH * 0.7;
+      const end = -rect.height + viewportH * 0.7;
+      const distance = start - end;
       const progress = Math.min(
         1,
-        Math.max(0, (viewportH - rect.top) / rect.height)
+        Math.max(0, (start - rect.top) / (distance || 1))
       );
 
       path!.style.strokeDashoffset = `${totalLength * (1 - progress)}`;
@@ -98,7 +116,7 @@ export default function ScrollDrawLine({
       io.disconnect();
       stopRaf();
     };
-  }, [d]);
+  }, [d, explicitProgress]);
 
   return (
     <div ref={sectionRef} className={`pointer-events-none ${className}`}>

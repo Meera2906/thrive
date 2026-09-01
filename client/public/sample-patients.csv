@@ -1,0 +1,7 @@
+id,name,email,age,distanceKm,totalAppointmentCount,missedAppointmentCount,daysSinceLastVisit,expectedFrequencyDays,treatmentElapsedDays,treatmentTotalDays
+S001,Arjun Menon,arjun.menon@example-mail.com,58,42,8,5,40,14,120,160
+S002,Lakshmi Pillai,lakshmi.pillai@example-mail.com,34,12,10,1,10,21,20,90
+S003,Ravi Chandran,ravi.chandran@example-mail.com,71,55,6,4,60,20,150,180
+S004,Deepa Krishnan,deepa.krishnan@example-mail.com,26,8,9,0,9,14,15,80
+S005,Mohammed Iqbal,mohammed.iqbal@example-mail.com,64,30,7,3,35,21,90,140
+S006,Anjali Warrier,,45,18,0,0,0,21,0,90

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, ArrowRight, AlertCircle, ExternalLink } from "lucide-react";
+import { ChevronDown, ArrowRight, AlertCircle, ExternalLink, FileDown } from "lucide-react";
 import { PatientWithRisk } from "../types";
 import FactorBar from "./FactorBar";
+import { downloadPatientPDF } from "../utils/pdfGenerator";
 
 function tierBadgeClass(tier: PatientWithRisk["risk"]["tier"]): string {
   switch (tier) {
@@ -142,8 +143,18 @@ export default function PatientRow({ patient, onViewProfile }: Props) {
                 </>
               )}
 
-              {/* View full profile button — always visible in expanded state */}
-              <div className="mt-4 flex justify-end">
+              {/* Actions row in expanded state */}
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    downloadPatientPDF(patient);
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand border border-brand/30 hover:border-brand bg-brand/10 hover:bg-brand/20 rounded-lg px-3 py-1.5 transition-colors"
+                >
+                  <FileDown size={13} />
+                  Download PDF
+                </button>
                 <button
                   id={`view-profile-${patient.id}`}
                   onClick={(e) => {

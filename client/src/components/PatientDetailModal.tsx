@@ -1,6 +1,7 @@
-import { X } from "lucide-react";
+import { X, FileDown } from "lucide-react";
 import { PatientWithRisk } from "../types";
 import FactorBar from "./FactorBar";
+import { downloadPatientPDF } from "../utils/pdfGenerator";
 
 interface Props {
   patient: PatientWithRisk | null;
@@ -26,22 +27,31 @@ export default function PatientDetailModal({ patient, onClose }: Props) {
     >
       {/* Inner card — stop propagation so clicks inside don't close */}
       <div
-        className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+        className="bg-slate-900 border border-slate-700/80 backdrop-blur-xl rounded-3xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
           <div>
-            <div className="font-bold text-white">{patient.name}</div>
-            <div className="text-xs text-white/40 font-mono">{patient.id}</div>
+            <div className="font-bold text-white text-lg">{patient.name}</div>
+            <div className="text-xs text-slate-400 font-mono">{patient.id}</div>
           </div>
-          <button
-            id={`modal-close-${patient.id}`}
-            onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-white/10 text-white/40"
-            aria-label="Close patient profile"
-          >
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => downloadPatientPDF(patient)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 text-xs font-bold transition-colors"
+            >
+              <FileDown size={14} />
+              PDF Report
+            </button>
+            <button
+              id={`modal-close-${patient.id}`}
+              onClick={onClose}
+              className="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+              aria-label="Close patient profile"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="px-5 py-4">

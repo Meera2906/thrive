@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
-import { getAllPatients, getPatientById } from "../services/patientStore";
+import { getAllPatients, getPatientById, upsertPatients } from "../services/patientStore";
 import { computeRisk } from "../services/scoringEngine";
-import { PatientWithRisk, StatsResponse } from "../types/patient";
+import { Patient, PatientWithRisk, StatsResponse } from "../types/patient";
 
 const router = Router();
 
@@ -26,6 +26,36 @@ function sortByRiskDescending(patients: PatientWithRisk[]): PatientWithRisk[] {
 router.get("/patients", (_req: Request, res: Response) => {
   const patients = sortByRiskDescending(buildPatientsWithRisk());
   res.json(patients);
+});
+
+// POST /api/patients — add or update single patient
+router.post("/patients", (req: Request, res: Response) => {
+  try {
+    const body = req.body as Partial<Patient>;
+    if (!body.name) {
+      return res.status(400).json({ error: "Patient name is required" });
+    }
+    const id = body.id || `P-${Date.now().toString(36).toUpperCase().slice(-5)}`;
+    const patient: Patient = {
+      id,
+      name: String(body.name),
+      age: Number(body.age ?? 45),
+      email: body.email ? String(body.email) : undefined,
+      distanceKm: Number(body.distanceKm ?? 10),
+      totalAppointmentCount: Number(body.totalAppointmentCount ?? 1),
+      missedAppointmentCount: Number(body.missedAppointmentCount ?? 0),
+      daysSinceLastVisit: Number(body.daysSinceLastVisit ?? 0),
+      expectedFrequencyDays: Number(body.expectedFrequencyDays ?? 30),
+      treatmentElapsedDays: Number(body.treatmentElapsedDays ?? 30),
+      treatmentTotalDays: Number(body.treatmentTotalDays ?? 180),
+    };
+
+    upsertPatients([patient]);
+    const withRisk: PatientWithRisk = { ...patient, risk: computeRisk(patient) };
+    res.json(withRisk);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Failed to save patient" });
+  }
 });
 
 // GET /api/patients/:id — single patient detail

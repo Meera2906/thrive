@@ -1,144 +1,137 @@
-# Patient Follow-up Risk Predictor ("Thrive")
+# Thrive — Patient Follow-Up Risk Predictor
 
-A transparent, staff-usable hospital dashboard for ranking patients by
-follow-up drop-out risk. Every score is produced by a hand-authored, fully
-explainable rule engine (no ML, no black box) — every point on the score is
-traceable to a specific, plain-English reason.
+An explainable, staff-usable clinical risk intelligence platform designed for healthcare providers to rank and prioritize patient follow-up drop-out risk. Powered by a deterministic 6-factor rule engine, every score is 100% traceable, rule-based, and free of opaque machine learning black boxes.
+
+---
+
+## Live Deployments
+
+| Component | Host Platform | Production URL | Status |
+| :--- | :--- | :--- | :--- |
+| **Frontend Dashboard** | Vercel | [thrive-ten-xi.vercel.app](https://thrive-ten-xi.vercel.app/) | Active |
+| **Backend REST API** | Render | [thrive-6129.onrender.com](https://thrive-6129.onrender.com/) | Active |
+
+---
+
+## Key Features
+
+- **Explainable Clinical Scoring Engine**: Calculates risk scores (0–100) using 6 weighted parameters with plain-English reason attribution.
+- **Visual Analytics & Cards Dashboard**: Toggle between animated visual analytics dashboards, patient card grids, and high-density data tables.
+- **Individual & Bulk PDF Exports**: Generate and download formatted PDF risk profiles for individual patients or multi-patient batch summaries.
+- **Manual Intake & OCR Document Scanner**: Register patient data manually or automatically extract clinical metrics from scanned prescription images.
+- **Nurse Outreach Call Queue**: Prioritized calling interface with interactive call scripts and logging of patient outcomes.
+- **Automated Communication Hub**: Generate and track outreach emails sent to high-risk patients.
+
+---
+
+## Repository Structure
 
 ```
 thrive/
-├── server/     Node.js + Express + TypeScript REST API
-└── client/     React + TypeScript + Vite + Tailwind dashboard
+├── client/                     # Frontend Application (React + Vite + TypeScript)
+│   ├── src/
+│   │   ├── components/         # Dashboard analytics, cards, modals, and showcase components
+│   │   ├── pages/              # Landing, Dashboard, Bulk Upload, Nurse Calls, and Email pages
+│   │   ├── utils/              # Client utilities including pdfGenerator.ts
+│   │   └── types.ts            # Data contracts and TypeScript type definitions
+│   └── vercel.json             # Vercel deployment routes & API rewrites
+├── server/                     # Backend REST API (Node.js + Express + SQLite)
+│   ├── src/
+│   │   ├── config/             # Configurable clinical risk weights and parameters
+│   │   ├── routes/             # Express API endpoints (patients, uploads, calls, emails)
+│   │   ├── services/           # Deterministic scoring engine and SQLite data store
+│   │   └── types/              # Server-side TypeScript interfaces
+│   └── package.json            # Server configuration with Node >=22.5 runtime spec
+├── DEPLOYMENT.md               # Step-by-step multi-cloud deployment guide
+└── PROMPTS.md                  # Development timeline and prompt engineering log
 ```
 
-This repo has already been verified to install, type-check, and build clean
-(`tsc --noEmit` passes in both packages, `vite build` succeeds, and the API
-was smoke-tested against all 18 seed patients).
+---
+
+## Clinical Scoring Engine Model
+
+All factor weights and thresholds are configured in `server/src/config/riskWeights.ts`.
+
+### Cold-Start Policy
+Patients with **fewer than 2 recorded appointments** receive `score = null`, are assigned the **"Insufficient history"** tier, and are excluded from numeric ranking until sufficient history is gathered.
+
+### 6-Factor Weighted Scoring Formula (Capped at 100)
+
+| # | Factor | Max Points | Clinical Rule |
+| :--- | :--- | :--- | :--- |
+| 1 | **Missed Appointment Ratio** | 35 pts | `round((missed / total) * 35)` |
+| 2 | **Days Overdue** | 20 pts | `round(clamp(days_since_last / frequency - 1, 0, 1.5) * 20)` |
+| 3 | **Geographic Distance** | 15 pts | 15 pts if > 40 km, 8 pts if > 20 km, else 0 pts |
+| 4 | **Treatment Fatigue** | 15 pts | 15 pts if elapsed/total > 0.7, 6 pts if > 0.4, else 0 pts |
+| 5 | **Patient Age** | 10 pts | 10 pts if ≥ 65 yrs, 5 pts if ≤ 30 yrs, else 0 pts |
+| 6 | **Visit Cadence** | 5 pts | 5 pts if target visit frequency ≤ 14 days, else 0 pts |
+
+### Risk Tier Thresholds
+- **High Risk**: Score ≥ 55
+- **Medium Risk**: Score ≥ 30
+- **Low Risk**: Score < 30
+- **Insufficient History**: < 2 Appointments
 
 ---
 
-## Opening this project in Antigravity
+## API Documentation
 
-1. Open the `thrive/` folder as the workspace root in Antigravity.
-2. Let the agent (or you, manually) run the setup commands below — Antigravity
-   can run these directly in its integrated terminal.
-3. Ask the agent to "start the API and the dashboard" and it can run the two
-   `npm run dev` commands below in separate terminals/tasks.
-4. The two packages are intentionally decoupled (separate `package.json`,
-   separate `node_modules`) so Antigravity's dependency graph and any
-   per-package agent tasks stay simple and isolated.
-
-No API keys, external services, or database are required — the backend
-serves an in-memory seed dataset of 18 synthetic patients.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/patients` | Retrieve ranked patient list with risk scores and primary drivers |
+| `POST` | `/api/patients` | Insert or update a patient and calculate score dynamically |
+| `GET` | `/api/patients/:id` | Fetch single patient profile, factor breakdown, and suggested actions |
+| `GET` | `/api/stats` | Retrieve aggregate counts by risk tier |
+| `GET` | `/api/uploads` | Retrieve CSV upload history and batch analytics |
+| `POST` | `/api/uploads` | Upload CSV dataset for bulk parsing and scoring |
+| `GET` | `/api/calls` | Fetch nurse call queue with generated call scripts |
+| `POST` | `/api/calls/log` | Record a nurse call outcome and notes |
+| `GET` | `/api/emails/candidates` | Retrieve high-risk email outreach candidates |
+| `POST` | `/api/emails/send-batch` | Trigger batch email outreach |
+| `GET` | `/api/health` | Service liveness health check |
 
 ---
 
-## Manual setup
+## Local Development Guide
 
-### 1. Backend (`server/`)
+### Prerequisites
+- Node.js (v22.5.0 or higher recommended)
+- npm (v10 or higher)
 
+### 1. Start Backend Server
 ```bash
 cd server
 npm install
-npm run dev        # starts on http://localhost:5000
+npm run dev
 ```
+*The REST API will start on `http://localhost:5000`.*
 
-Other scripts: `npm run build` (compile to `dist/`), `npm run typecheck`.
-
-### 2. Frontend (`client/`)
-
-In a second terminal:
-
+### 2. Start Frontend Application
+In a separate terminal:
 ```bash
 cd client
 npm install
-npm run dev         # starts on http://localhost:5173
+npm run dev
 ```
-
-Vite is pre-configured to proxy `/api/*` requests to `http://localhost:5000`
-(see `client/vite.config.ts`), so just open **http://localhost:5173** once
-both servers are running.
-
-Other scripts: `npm run build`, `npm run typecheck`.
+*The Vite dashboard will start on `http://localhost:5173` and automatically proxy `/api` requests to the local backend.*
 
 ---
 
-## API
+## Quality Assurance & Verification
 
-| Endpoint             | Description                                             |
-|-----------------------|----------------------------------------------------------|
-| `GET /api/patients`   | Full ranked patient list with risk scores & top reason   |
-| `GET /api/patients/:id` | Single patient — full factor breakdown & actions        |
-| `GET /api/stats`      | Counts of High / Medium / Low / Insufficient-history      |
-| `GET /api/health`     | Liveness check                                            |
+Both packages include built-in TypeScript validation:
 
----
+```bash
+# Verify Client Type Safety
+cd client && npm run typecheck
 
-## The scoring model
-
-All weights, caps, and thresholds live in one file:
-`server/src/config/riskWeights.ts` — tune the model there without touching
-`server/src/services/scoringEngine.ts`.
-
-**Cold-start rule (checked first).** If a patient has fewer than 2 recorded
-appointments, they get `score = null` (rendered as `—`), tier
-`"Insufficient history"`, and are always sorted to the bottom of the list —
-never scored as Low risk.
-
-**Otherwise, six weighted factors are summed (capped at 100):**
-
-| # | Factor              | Max pts | Rule |
-|---|----------------------|---------|------|
-| 1 | Missed-ratio         | 35      | `round((missed / total) * 35)` |
-| 2 | Overdue-ness         | 20      | `round(clamp(days_since_last/frequency - 1, 0, 1.5) * 20)` |
-| 3 | Distance             | 15      | 15 if > 40 km, 8 if > 20 km, else 0 |
-| 4 | Treatment fatigue    | 15      | 15 if elapsed/total > 0.7, 6 if > 0.4, else 0 |
-| 5 | Age band             | 10      | 10 if ≥ 65, 5 if ≤ 30, else 0 |
-| 6 | Visit frequency      | 5       | 5 if expected cadence ≤ 14 days, else 0 |
-
-**Tiers:** `≥ 55` High · `≥ 30` Medium · else Low.
-
-**Suggested next actions** are looked up from the top 2 highest-scoring
-factors for that patient (see `ACTIONS` in `riskWeights.ts`).
-
----
-
-## Seed dataset
-
-`server/src/services/seedData.ts` ships 18 synthetic patients, verified to
-land as: **5 High**, **5 Medium**, **5 Low**, **3 Insufficient history** —
-so every tier badge, the cold-start card, and the empty/sparse states all
-have real examples to click through immediately.
-
----
-
-## Frontend structure
-
-```
-client/src/
-├── App.tsx                    Data fetching, search/filter/sort state
-├── types.ts                   API response types
-├── index.css                  Tailwind + tier color tokens
-└── components/
-    ├── Header.tsx              Branding bar
-    ├── SummaryCards.tsx        Tier count tiles
-    ├── PatientFilters.tsx      Search box, tier filter, sort dropdown
-    ├── PatientList.tsx         Renders the ranked rows
-    ├── PatientRow.tsx          Expandable row (Framer Motion animation)
-    ├── FactorBar.tsx           Animated per-factor score bar
-    └── PatientDetailModal.tsx  Optional deep-dive modal (not wired by
-                                 default — available for a "view full
-                                 profile" action if you want one)
+# Verify Server Type Safety
+cd server && npm run typecheck
 ```
 
 ---
 
-## Notes for extending this
+## Supporting Documentation
 
-- Swap the in-memory `seedData.ts` for a real data source by keeping the
-  `Patient` interface (`server/src/types/patient.ts`) as the contract —
-  `scoringEngine.ts` doesn't care where patients come from.
-- The engine is pure functions (`computeRisk(patient) → RiskResult`) with no
-  side effects, so it's straightforward to unit test or port.
-- `riskWeights.ts` is the only file clinical/ops staff should need to touch
-  to retune thresholds.
+- [Deployment Guide (DEPLOYMENT.md)](./DEPLOYMENT.md): Complete steps for deploying to Render and Vercel.
+- [Prompt History (PROMPTS.md)](./PROMPTS.md): Documented development prompt engineering timeline.

@@ -106,53 +106,74 @@ db.exec(`
 `);
 
 // ---------------------------------------------------------------------------
-// Idempotent seed — only runs on a truly empty table
+// Enforce exactly the 18 seed patients on every startup
+//
+// This ensures the deployed app always shows only the intended demo data:
+//   1. Delete any patient rows whose ID is not in the seed list
+//      (removes data that was written by a previous CSV upload).
+//   2. Upsert all 18 seed patients so they always reflect canonical values.
+//   3. Clear the uploads table so the upload history is always fresh.
 // ---------------------------------------------------------------------------
 
-const countRow = db.prepare("SELECT COUNT(*) AS n FROM patients").get() as { n: number };
-if (countRow.n === 0) {
-  const insert = db.prepare(`
-    INSERT INTO patients (
-      id, name, age, email, distanceKm,
-      totalAppointmentCount, missedAppointmentCount,
-      daysSinceLastVisit, expectedFrequencyDays,
-      treatmentElapsedDays, treatmentTotalDays
-    ) VALUES (
-      :id, :name, :age, :email, :distanceKm,
-      :totalAppointmentCount, :missedAppointmentCount,
-      :daysSinceLastVisit, :expectedFrequencyDays,
-      :treatmentElapsedDays, :treatmentTotalDays
-    )
-  `);
+const seedIds = seedPatients.map((p) => p.id);
+const seedIdPlaceholders = seedIds.map(() => "?").join(",");
 
-  for (const p of seedPatients) {
-    insert.run({
-      id: p.id,
-      name: p.name,
-      age: p.age,
-      email: p.email ?? null,
-      distanceKm: p.distanceKm,
-      totalAppointmentCount: p.totalAppointmentCount,
-      missedAppointmentCount: p.missedAppointmentCount,
-      daysSinceLastVisit: p.daysSinceLastVisit,
-      expectedFrequencyDays: p.expectedFrequencyDays,
-      treatmentElapsedDays: p.treatmentElapsedDays,
-      treatmentTotalDays: p.treatmentTotalDays,
-    });
-  }
-
+// Step 1 — remove any non-seed patients (e.g. from a previously uploaded CSV)
+const deletedNonSeed = db
+  .prepare(`DELETE FROM patients WHERE id NOT IN (${seedIdPlaceholders})`)
+  .run(...seedIds);
+if (deletedNonSeed.changes > 0) {
   // eslint-disable-next-line no-console
-  console.log(`[patientStore] Seeded ${seedPatients.length} patients into ${DB_PATH}`);
-} else {
-  // Backfill emails for pre-existing seed rows that predate the email
-  // column (keeps old DB files usable for the bulk-email demo).
-  const backfill = db.prepare(
-    "UPDATE patients SET email = :email WHERE id = :id AND (email IS NULL OR email = '')"
-  );
-  for (const p of seedPatients) {
-    if (p.email) backfill.run({ id: p.id, email: p.email });
-  }
+  console.log(`[patientStore] Removed ${deletedNonSeed.changes} non-seed patient(s) from ${DB_PATH}`);
 }
+
+// Step 2 — upsert all 18 seeds (insert if missing, update if present)
+const upsertSeed = db.prepare(`
+  INSERT INTO patients (
+    id, name, age, email, distanceKm,
+    totalAppointmentCount, missedAppointmentCount,
+    daysSinceLastVisit, expectedFrequencyDays,
+    treatmentElapsedDays, treatmentTotalDays
+  ) VALUES (
+    :id, :name, :age, :email, :distanceKm,
+    :totalAppointmentCount, :missedAppointmentCount,
+    :daysSinceLastVisit, :expectedFrequencyDays,
+    :treatmentElapsedDays, :treatmentTotalDays
+  )
+  ON CONFLICT(id) DO UPDATE SET
+    name                   = excluded.name,
+    age                    = excluded.age,
+    email                  = excluded.email,
+    distanceKm             = excluded.distanceKm,
+    totalAppointmentCount  = excluded.totalAppointmentCount,
+    missedAppointmentCount = excluded.missedAppointmentCount,
+    daysSinceLastVisit     = excluded.daysSinceLastVisit,
+    expectedFrequencyDays  = excluded.expectedFrequencyDays,
+    treatmentElapsedDays   = excluded.treatmentElapsedDays,
+    treatmentTotalDays     = excluded.treatmentTotalDays
+`);
+
+for (const p of seedPatients) {
+  upsertSeed.run({
+    id: p.id,
+    name: p.name,
+    age: p.age,
+    email: p.email ?? null,
+    distanceKm: p.distanceKm,
+    totalAppointmentCount: p.totalAppointmentCount,
+    missedAppointmentCount: p.missedAppointmentCount,
+    daysSinceLastVisit: p.daysSinceLastVisit,
+    expectedFrequencyDays: p.expectedFrequencyDays,
+    treatmentElapsedDays: p.treatmentElapsedDays,
+    treatmentTotalDays: p.treatmentTotalDays,
+  });
+}
+
+// Step 3 — clear the uploads table so history is always fresh on startup
+db.exec("DELETE FROM uploads");
+
+// eslint-disable-next-line no-console
+console.log(`[patientStore] Reset to ${seedPatients.length} seed patients; upload history cleared.`);
 
 // ---------------------------------------------------------------------------
 // Public API — patients

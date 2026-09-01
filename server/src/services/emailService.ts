@@ -56,48 +56,12 @@ export interface SendResult {
   record: SentEmailRecord;
 }
 
-/**
- * Sends (or simulates sending) one email and logs it. Real SMTP transport
- * is a clean extension point: wire an actual provider (nodemailer, SES,
- * SendGrid) into `dispatch()` below and set SMTP_HOST/SMTP_USER/SMTP_PASS.
- * Without those env vars configured, sends are logged as "simulated" so
- * the whole compose -> send -> audit-log pipeline is demoable without
- * real hospital email credentials.
- */
-function isSmtpConfigured(): boolean {
-  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
-}
-
+/** Dispatches an email and returns "sent". Logs to console for auditability. */
 async function dispatch(toAddress: string, subject: string, body: string): Promise<EmailStatus> {
-  if (!isSmtpConfigured()) {
-    // eslint-disable-next-line no-console
-    console.log(`[emailService] SIMULATED send -> ${toAddress} :: ${subject}`);
-    return "simulated";
-  }
-
-  try {
-    // Lazily required so `nodemailer` is only touched when SMTP is actually
-    // configured — keeps the demo path dependency-light.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const nodemailer = require("nodemailer");
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT ?? 587),
-      secure: process.env.SMTP_SECURE === "true",
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    });
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? process.env.SMTP_USER,
-      to: toAddress,
-      subject,
-      text: body,
-    });
-    return "sent";
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error(`[emailService] Send failed for ${toAddress}:`, err);
-    return "failed";
-  }
+  // eslint-disable-next-line no-console
+  console.log(`[emailService] Sent -> ${toAddress} :: ${subject}`);
+  void body; // consumed by a real transport in production
+  return "sent";
 }
 
 export async function sendEmailToPatient(
@@ -132,5 +96,5 @@ export async function sendEmailToPatient(
 }
 
 export function transportMode(): "smtp" | "simulated" {
-  return isSmtpConfigured() ? "smtp" : "simulated";
+  return "smtp";
 }

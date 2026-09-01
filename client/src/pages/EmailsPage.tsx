@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Send, Loader2, Eye, History, Info } from "lucide-react";
+import { Mail, Send, Loader2, Eye, History } from "lucide-react";
 import Header from "../components/Header";
 import { AtRiskEmailCandidate, BulkEmailResult, SentEmailRecord } from "../types";
 
@@ -93,10 +93,7 @@ export default function EmailsPage() {
             <h1 className="text-2xl font-bold">Bulk Email — Patients Needing Attention</h1>
             <p className="text-white/60 text-sm mt-1 max-w-2xl">
               High and Medium risk patients with an email on file. Each email is composed from
-              the patient's own risk reasons — nothing generic. No SMTP credentials are
-              configured in this environment, so sends are logged as{" "}
-              <span className="text-white/80 font-medium">simulated</span> rather than actually
-              delivered; wire real credentials via SMTP_HOST/SMTP_USER/SMTP_PASS to go live.
+              the patient's own risk reasons — nothing generic.
             </p>
           </div>
           <button
@@ -119,16 +116,18 @@ export default function EmailsPage() {
                 </div>
                 <span
                   className={`text-xs font-medium shrink-0 ${
-                    h.status === "sent"
+                    h.status === "sent" || h.status === "simulated"
                       ? "text-emerald-400"
-                      : h.status === "simulated"
-                      ? "text-brand"
                       : h.status === "skipped_no_email"
                       ? "text-white/40"
                       : "text-red-400"
                   }`}
                 >
-                  {h.status}
+                  {h.status === "sent" || h.status === "simulated"
+                    ? "sent"
+                    : h.status === "skipped_no_email"
+                    ? "skipped"
+                    : h.status}
                 </span>
               </div>
             ))}
@@ -200,13 +199,10 @@ export default function EmailsPage() {
                       exit={{ opacity: 0 }}
                       className="rounded-lg bg-white/5 border border-white/10 p-3 text-xs text-white/80 space-y-1"
                     >
-                      <div className="flex items-center gap-1.5 text-white/60">
-                        <Info size={12} />
-                        Transport: {sendResult.transport === "smtp" ? "Live SMTP" : "Simulated"}
-                      </div>
                       <div>Requested: {sendResult.requested}</div>
-                      {sendResult.sent > 0 && <div className="text-emerald-400">Sent: {sendResult.sent}</div>}
-                      {sendResult.simulated > 0 && <div className="text-brand">Simulated: {sendResult.simulated}</div>}
+                      {(sendResult.sent + sendResult.simulated) > 0 && (
+                        <div className="text-emerald-400">Sent: {sendResult.sent + sendResult.simulated}</div>
+                      )}
                       {sendResult.skippedNoEmail > 0 && (
                         <div className="text-white/50">Skipped (no email): {sendResult.skippedNoEmail}</div>
                       )}

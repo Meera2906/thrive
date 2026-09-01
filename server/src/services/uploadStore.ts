@@ -1,22 +1,17 @@
 import { randomUUID } from "crypto";
-import { db } from "./patientStore";
+import { db, deletePatientsByUploadId } from "./patientStore";
 import { UploadAnalytics, UploadRecord, RowError } from "../types/upload";
 
 /**
- * Persists the raw uploaded file as a BLOB (per the assignment's explicit
- * requirement to use the blob data structure for bulk upload) alongside the
- * analytics snapshot computed at upload time. Storing the raw bytes means
- * an upload is always re-auditable — a hospital can always ask "show me
- * exactly what we uploaded on this date" and get the original file back
- * byte-for-byte, not just a derived summary.
+ * Persists the raw uploaded file as a BLOB alongside the analytics snapshot.
  */
 export function saveUpload(
+  id: string,
   filename: string,
   rawBuffer: Buffer,
   analytics: UploadAnalytics,
   errors: RowError[]
 ): UploadRecord {
-  const id = randomUUID();
   const uploadedAt = new Date().toISOString();
 
   db.prepare(
@@ -85,9 +80,11 @@ export function getUploadBlob(id: string): { filename: string; buffer: Buffer } 
   return { filename: row.filename, buffer: Buffer.from(row.rawBlob) };
 }
 
-/** Delete an upload record (and its raw blob) by ID. Returns true if a row was deleted. */
+/** Delete an upload record (and its raw blob and uploaded patients) by ID. Returns true if a row was deleted. */
 export function deleteUpload(id: string): boolean {
+  deletePatientsByUploadId(id);
   const result = db.prepare(`DELETE FROM uploads WHERE id = ?`).run(id);
-  return result.changes > 0;
+  return Number(result.changes) > 0;
 }
+
 

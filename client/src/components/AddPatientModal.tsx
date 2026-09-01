@@ -85,11 +85,18 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }: Pro
 
     // Simulate smart OCR optical scan parsing of prescription / intake sheet
     setTimeout(() => {
-      // Mock extracted values derived from document scan
+      // Extract patient name from document filename or use a generic default
+      const cleanFileName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
       const fileNameLower = file.name.toLowerCase();
-      let mockName = "Evelyn Vance";
+      let mockName = cleanFileName
+        .split(" ")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
       if (fileNameLower.includes("smith")) mockName = "Sarah Smith";
       else if (fileNameLower.includes("john")) mockName = "John Miller";
+      else if (!mockName || mockName.toLowerCase() === "document" || mockName.toLowerCase() === "file") {
+        mockName = "Patient Document Scan";
+      }
 
       setName(mockName);
       setId(`SCAN-${Math.floor(1000 + Math.random() * 9000)}`);

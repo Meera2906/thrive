@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { parseCsv } from "./csvParser";
 import { upsertPatients } from "./patientStore";
 import { saveUpload } from "./uploadStore";
@@ -45,6 +46,9 @@ function parseNumber(value: string | undefined, fallback: number): number {
  * over the parsed batch, and persists the raw file as a BLOB for audit.
  */
 export function processUpload(filename: string, buffer: Buffer): UploadRecord {
+  // Generate the upload ID upfront so we can tag patient rows with it,
+  // enabling precise cleanup when this upload is later deleted.
+  const uploadId = randomUUID();
   const text = buffer.toString("utf-8");
   const { headers, rows } = parseCsv(text);
 
@@ -103,7 +107,7 @@ export function processUpload(filename: string, buffer: Buffer): UploadRecord {
   }
 
   const { newIds, updatedIds } = validPatients.length > 0
-    ? upsertPatients(validPatients)
+    ? upsertPatients(validPatients, uploadId)
     : { newIds: [], updatedIds: [] };
 
   // Instant analytics — same scoring engine the dashboard uses, so the
@@ -140,5 +144,5 @@ export function processUpload(filename: string, buffer: Buffer): UploadRecord {
     topRiskPatientIds,
   };
 
-  return saveUpload(filename, buffer, analytics, errors);
+  return saveUpload(uploadId, filename, buffer, analytics, errors);
 }

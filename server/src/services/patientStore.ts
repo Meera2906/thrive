@@ -64,6 +64,9 @@ const patientColumns = db.prepare("PRAGMA table_info(patients)").all() as Array<
 if (!patientColumns.some((c) => c.name === "email")) {
   db.exec("ALTER TABLE patients ADD COLUMN email TEXT");
 }
+if (!patientColumns.some((c) => c.name === "sourceUploadId")) {
+  db.exec("ALTER TABLE patients ADD COLUMN sourceUploadId TEXT");
+}
 
 // ---------------------------------------------------------------------------
 // Supporting tables for uploads / call log / sent emails
@@ -115,7 +118,8 @@ db.exec(`
 //   3. Clear the uploads table so the upload history is always fresh.
 // ---------------------------------------------------------------------------
 
-const seedIds = seedPatients.map((p) => p.id);
+/** Exported so other modules can reference the canonical seed patient IDs. */
+export const seedIds = seedPatients.map((p) => p.id);
 const seedIdPlaceholders = seedIds.map(() => "?").join(",");
 
 // Step 1 — remove any non-seed patients (e.g. from a previously uploaded CSV)
@@ -204,8 +208,15 @@ export function getPatientsByIds(ids: string[]): Patient[] {
  * Insert-or-update patients from a bulk CSV upload. Returns which ids were
  * brand new vs. updated existing records, so the upload analytics can
  * report both counts.
+ *
+ * @param patients  The patient rows parsed from the uploaded CSV.
+ * @param sourceUploadId  Optional upload record ID — stored on newly inserted
+ *   rows so they can be removed later when the upload is deleted.
  */
-export function upsertPatients(patients: Patient[]): {
+export function upsertPatients(
+  patients: Patient[],
+  sourceUploadId?: string
+): {
   newIds: string[];
   updatedIds: string[];
 } {
@@ -218,12 +229,14 @@ export function upsertPatients(patients: Patient[]): {
       id, name, age, email, distanceKm,
       totalAppointmentCount, missedAppointmentCount,
       daysSinceLastVisit, expectedFrequencyDays,
-      treatmentElapsedDays, treatmentTotalDays
+      treatmentElapsedDays, treatmentTotalDays,
+      sourceUploadId
     ) VALUES (
       :id, :name, :age, :email, :distanceKm,
       :totalAppointmentCount, :missedAppointmentCount,
       :daysSinceLastVisit, :expectedFrequencyDays,
-      :treatmentElapsedDays, :treatmentTotalDays
+      :treatmentElapsedDays, :treatmentTotalDays,
+      :sourceUploadId
     )
   `);
   const updateStmt = db.prepare(`
@@ -242,7 +255,7 @@ export function upsertPatients(patients: Patient[]): {
   `);
 
   for (const p of patients) {
-    const params = {
+    const base = {
       id: p.id,
       name: p.name,
       age: p.age,
@@ -258,13 +271,25 @@ export function upsertPatients(patients: Patient[]): {
 
     const exists = existsStmt.get(p.id);
     if (exists) {
-      updateStmt.run(params);
+      updateStmt.run(base);
       updatedIds.push(p.id);
     } else {
-      insertStmt.run(params);
+      insertStmt.run({ ...base, sourceUploadId: sourceUploadId ?? null });
       newIds.push(p.id);
     }
   }
 
   return { newIds, updatedIds };
+}
+
+/**
+ * Delete all patients that were inserted by a specific upload (i.e. non-seed
+ * patients tagged with the given uploadId). Returns the number of rows deleted.
+ */
+export function deletePatientsByUploadId(uploadId: string): number {
+  const result = db
+    .prepare("DELETE FROM patients WHERE sourceUploadId = ?")
+    .run(uploadId);
+  // node:sqlite returns changes as number | bigint depending on Node version
+  return Number(result.changes);
 }

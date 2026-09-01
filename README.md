@@ -1,4 +1,6 @@
-# Thrive — Patient Follow-Up Risk Predictor
+# CareCompass — Patient Follow-Up Risk Predictor
+
+> Submitted for the **Thrive Hackathon**
 
 An explainable, staff-usable clinical risk intelligence platform designed for healthcare providers to rank and prioritize patient follow-up drop-out risk. Powered by a deterministic 6-factor rule engine, every score is 100% traceable, rule-based, and free of opaque machine learning black boxes.
 

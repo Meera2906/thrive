@@ -216,7 +216,7 @@ export default function LandingPage() {
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
       <footer className="border-t border-white/10 py-8 text-center text-white/40 text-xs">
-        Thrive — Patient Follow-up Risk Predictor · Transparent rule engine · No ML
+        CareCompass — Patient Follow-up Risk Predictor · Transparent rule engine · No ML
       </footer>
     </div>
   );

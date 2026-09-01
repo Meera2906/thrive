@@ -16,13 +16,13 @@ export default function Header() {
     <header className="border-b border-white/10 bg-white/5 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3 flex-wrap">
         {/* Logo — clicking goes to "/" always */}
-        <Link to="/" className="flex items-center gap-3 group" aria-label="Thrive home">
+        <Link to="/" className="flex items-center gap-3 group" aria-label="CareCompass home">
           <div className="h-10 w-10 rounded-xl flex items-center justify-center transition-colors bg-brand group-hover:bg-brand/80 shrink-0">
             <HeartPulse className="text-white" size={22} />
           </div>
           <div>
             <div className="text-lg font-bold leading-tight text-white">
-              Patient Follow-up Risk Predictor
+              CareCompass
             </div>
             <p className="text-sm leading-tight text-white/60">
               Transparent, rule-based follow-up drop-out risk ranking

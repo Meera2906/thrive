@@ -84,3 +84,10 @@ export function getUploadBlob(id: string): { filename: string; buffer: Buffer } 
   if (!row) return undefined;
   return { filename: row.filename, buffer: Buffer.from(row.rawBlob) };
 }
+
+/** Delete an upload record (and its raw blob) by ID. Returns true if a row was deleted. */
+export function deleteUpload(id: string): boolean {
+  const result = db.prepare(`DELETE FROM uploads WHERE id = ?`).run(id);
+  return result.changes > 0;
+}
+

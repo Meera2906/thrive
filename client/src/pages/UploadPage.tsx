@@ -8,6 +8,7 @@ import {
   Download,
   Loader2,
   FileText,
+  Trash2,
 } from "lucide-react";
 import Header from "../components/Header";
 import { UploadRecord } from "../types";
@@ -34,6 +35,7 @@ export default function UploadPage() {
   const [latestResult, setLatestResult] = useState<UploadRecord | null>(null);
   const [history, setHistory] = useState<UploadRecord[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const loadHistory = useCallback(async () => {
@@ -76,6 +78,23 @@ export default function UploadPage() {
       }
     },
     [loadHistory]
+  );
+
+  const handleDelete = useCallback(
+    async (id: string, filename: string) => {
+      if (!window.confirm(`Remove "${filename}" from upload history?`)) return;
+      setDeletingId(id);
+      try {
+        const res = await fetch(`/api/uploads/${id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Delete failed");
+        setHistory((prev) => prev.filter((h) => h.id !== id));
+      } catch {
+        alert("Could not delete this upload. Please try again.");
+      } finally {
+        setDeletingId(null);
+      }
+    },
+    []
   );
 
   const onDrop = useCallback(
@@ -269,6 +288,14 @@ export default function UploadPage() {
                     >
                       <Download size={13} /> File
                     </a>
+                    <button
+                      onClick={() => handleDelete(h.id, h.filename)}
+                      disabled={deletingId === h.id}
+                      className="text-white/30 hover:text-red-400 transition-colors disabled:opacity-40"
+                      title="Remove from history"
+                    >
+                      {deletingId === h.id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                    </button>
                   </div>
                 </div>
               ))}

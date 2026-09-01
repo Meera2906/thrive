@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
 import { processUpload } from "../services/uploadService";
-import { getUploadBlob, getUploadById, listUploads } from "../services/uploadStore";
+import { getUploadBlob, getUploadById, listUploads, deleteUpload } from "../services/uploadStore";
 
 const router = Router();
 
@@ -46,6 +46,13 @@ router.get("/uploads/:id/file", (req: Request, res: Response) => {
   res.setHeader("Content-Disposition", `attachment; filename="${blob.filename}"`);
   res.setHeader("Content-Type", "text/csv");
   res.send(blob.buffer);
+});
+
+// DELETE /api/uploads/:id — remove an upload record from history
+router.delete("/uploads/:id", (req: Request, res: Response) => {
+  const deleted = deleteUpload(req.params.id);
+  if (!deleted) return res.status(404).json({ error: `Upload ${req.params.id} not found` });
+  res.json({ success: true, id: req.params.id });
 });
 
 export default router;

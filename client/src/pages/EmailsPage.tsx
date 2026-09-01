@@ -202,7 +202,7 @@ export default function EmailsPage() {
                     >
                       <div className="flex items-center gap-1.5 text-white/60">
                         <Info size={12} />
-                        Transport: {sendResult.transport === "smtp" ? "Live SMTP" : "Simulated (no SMTP configured)"}
+                        Transport: {sendResult.transport === "smtp" ? "Live SMTP" : "Simulated"}
                       </div>
                       <div>Requested: {sendResult.requested}</div>
                       {sendResult.sent > 0 && <div className="text-emerald-400">Sent: {sendResult.sent}</div>}

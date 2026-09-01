@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-high: #dc2626;
+  --color-high-bg: #fef2f2;
+  --color-medium: #d97706;
+  --color-medium-bg: #fffbeb;
+  --color-low: #0d9488;
+  --color-low-bg: #f0fdfa;
+  --color-unknown: #6b7280;
+  --color-unknown-bg: #f3f4f6;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Tier badge shell ─────────────────────────────────────────────────────── */
+
+.tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Soft gradient fills — same hue as before, slightly richer */
+.tier-badge-high {
+  color: var(--color-high);
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.tier-badge-medium {
+  color: var(--color-medium);
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.tier-badge-low {
+  color: var(--color-low);
+  background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+}
+
+.tier-badge-unknown {
+  color: var(--color-unknown);
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+/* ─── Landing page helpers ─────────────────────────────────────────────────── */
+
+.landing-dark {
+  background: linear-gradient(160deg, #0f172a 0%, #0a1628 60%, #0d1f3c 100%);
+}
+
+.landing-hero-text {
+  background: linear-gradient(135deg, #ffffff 0%, #99f6e4 50%, #0d9488 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtle grid-line overlay for the dark hero */
+.landing-grid-bg {
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}

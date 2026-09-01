@@ -30,20 +30,20 @@ export default function PatientFilters({
       <div className="relative flex-1">
         <Search
           size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
         />
         <input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search by patient name or ID..."
-          className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          className="w-full pl-9 pr-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-brand-mid focus:bg-white/10 transition-colors"
         />
       </div>
 
       <select
         value={tier}
         onChange={(e) => onTierChange(e.target.value as TierFilter)}
-        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+        className="px-3 py-2 rounded-lg bg-[#1a1525] border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-mid transition-colors"
       >
         {TIERS.map((t) => (
           <option key={t} value={t}>
@@ -55,7 +55,7 @@ export default function PatientFilters({
       <select
         value={sortKey}
         onChange={(e) => onSortKeyChange(e.target.value as SortKey)}
-        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+        className="px-3 py-2 rounded-lg bg-[#1a1525] border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-mid transition-colors"
       >
         {SORTS.map((s) => (
           <option key={s.value} value={s.value}>

@@ -40,7 +40,7 @@ export default function PatientRow({ patient, onViewProfile }: Props) {
 
   return (
     <motion.div
-      className="border border-slate-200 rounded-xl bg-white overflow-hidden"
+      className="border border-white/10 rounded-xl bg-white/5 overflow-hidden backdrop-blur-sm"
       style={tierGlowStyle(risk.tier)}
       whileHover={{
         boxShadow: "0 0 0 2px var(--glow), 0 4px 16px var(--glow)",
@@ -50,30 +50,30 @@ export default function PatientRow({ patient, onViewProfile }: Props) {
     >
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-slate-50 transition-colors"
+        className="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-white/10 transition-colors"
       >
-        <div className="w-16 shrink-0 font-mono text-xs text-slate-400">{patient.id}</div>
+        <div className="w-16 shrink-0 font-mono text-xs text-white/40">{patient.id}</div>
 
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-slate-900 truncate">{patient.name}</div>
-          <div className="text-xs text-slate-500 truncate">
+          <div className="font-semibold text-white truncate">{patient.name}</div>
+          <div className="text-xs text-white/60 truncate">
             {risk.topReasonLabel ?? "No elevated risk factors"}
           </div>
         </div>
 
-        <div className="hidden md:block text-sm text-slate-500 w-14 text-right">
+        <div className="hidden md:block text-sm text-white/60 w-14 text-right">
           {patient.age} yrs
         </div>
-        <div className="hidden md:block text-sm text-slate-500 w-20 text-right">
+        <div className="hidden md:block text-sm text-white/60 w-20 text-right">
           {patient.distanceKm} km
         </div>
-        <div className="hidden md:block text-sm text-slate-500 w-28 text-right">
+        <div className="hidden md:block text-sm text-white/60 w-28 text-right">
           {patient.daysSinceLastVisit}d overdue*
         </div>
 
         <span className={tierBadgeClass(risk.tier)}>{risk.tier}</span>
 
-        <div className="w-14 text-right font-bold text-slate-900">
+        <div className="w-14 text-right font-bold text-white">
           {risk.score === null ? "—" : `${risk.score}/100`}
         </div>
 
@@ -81,7 +81,7 @@ export default function PatientRow({ patient, onViewProfile }: Props) {
         <motion.div
           animate={{ rotate: expanded ? 180 : 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 22 }}
-          className="text-slate-400"
+          className="text-white/40"
         >
           <ChevronDown size={18} />
         </motion.div>
@@ -94,21 +94,21 @@ export default function PatientRow({ patient, onViewProfile }: Props) {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="border-t border-slate-100"
+            className="border-t border-white/10"
           >
             <div className="px-4 py-4">
               {isColdStart ? (
-                <div className="flex items-start gap-3 rounded-lg bg-slate-50 border border-slate-200 p-4">
-                  <AlertCircle className="text-slate-400 mt-0.5" size={20} />
+                <div className="flex items-start gap-3 rounded-lg bg-white/5 border border-white/10 p-4">
+                  <AlertCircle className="text-white/40 mt-0.5" size={20} />
                   <div>
-                    <div className="font-medium text-slate-700">
+                    <div className="font-medium text-white/90">
                       Insufficient appointment history
                     </div>
-                    <p className="text-sm text-slate-500 mt-1">
+                    <p className="text-sm text-white/60 mt-1">
                       {risk.reasons[0].label}. This patient is excluded from tier ranking
                       until at least 2 appointments are recorded.
                     </p>
-                    <div className="mt-3 flex items-center gap-2 text-sm font-medium text-teal-700">
+                    <div className="mt-3 flex items-center gap-2 text-sm font-medium text-brand-dark">
                       <ArrowRight size={15} />
                       {risk.suggestedActions[0]}
                     </div>
@@ -116,25 +116,25 @@ export default function PatientRow({ patient, onViewProfile }: Props) {
                 </div>
               ) : (
                 <>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-white/40 mb-1">
                     Factor breakdown
                   </div>
-                  <div className="divide-y divide-slate-50">
+                  <div className="divide-y divide-white/10">
                     {risk.reasons.map((r) => (
                       <FactorBar key={r.key} reason={r} />
                     ))}
                   </div>
 
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-400 mt-4 mb-2">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-white/40 mt-4 mb-2">
                     Suggested next actions
                   </div>
                   <ul className="space-y-1.5">
                     {risk.suggestedActions.map((action) => (
                       <li
                         key={action}
-                        className="flex items-center gap-2 text-sm text-slate-700"
+                        className="flex items-center gap-2 text-sm text-white/80"
                       >
-                        <ArrowRight size={15} className="text-teal-600 shrink-0" />
+                        <ArrowRight size={15} className="text-brand-dark shrink-0" />
                         {action}
                       </li>
                     ))}
@@ -150,7 +150,7 @@ export default function PatientRow({ patient, onViewProfile }: Props) {
                     e.stopPropagation();
                     onViewProfile();
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900 border border-teal-200 hover:border-teal-400 bg-teal-50 hover:bg-teal-100 rounded-lg px-3 py-1.5 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-white hover:text-brand-light border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 rounded-lg px-3 py-1.5 transition-colors"
                 >
                   <ExternalLink size={13} />
                   View full profile

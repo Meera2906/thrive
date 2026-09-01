@@ -10,12 +10,12 @@ interface Props {
 export default function ErrorState({ error, onRetry }: Props) {
   return (
     <div
-      className="rounded-2xl border border-red-100 bg-red-50 px-6 py-10 text-center"
+      className="rounded-2xl border border-red-500/30 bg-red-950/40 backdrop-blur-sm px-6 py-10 text-center"
       role="alert"
     >
       {/* Inline SVG illustration */}
       <svg
-        className="mx-auto mb-4 text-red-300"
+        className="mx-auto mb-4 text-red-400"
         width="56"
         height="56"
         viewBox="0 0 56 56"
@@ -33,15 +33,15 @@ export default function ErrorState({ error, onRetry }: Props) {
         <circle cx="28" cy="37" r="1.5" fill="currentColor" />
       </svg>
 
-      <h2 className="text-base font-semibold text-red-700 mb-1">
+      <h2 className="text-base font-semibold text-red-300 mb-1">
         Unable to load patient data
       </h2>
-      <p className="text-sm text-red-500 mb-5 max-w-sm mx-auto">{error}</p>
+      <p className="text-sm text-red-200/70 mb-5 max-w-sm mx-auto">{error}</p>
 
       <button
         id="retry-load-btn"
         onClick={onRetry}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white text-sm font-medium transition-colors border border-red-500/50"
       >
         {/* Refresh icon */}
         <svg

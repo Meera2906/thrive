@@ -32,10 +32,10 @@ const TIERS: TierConfig[] = [
     label: "High Risk",
     description: "Patients at serious risk of dropping out — contact immediately.",
     Icon: AlertTriangle,
-    cardClass: "bg-red-950/90 backdrop-blur-sm",
-    iconClass: "text-red-400",
-    countClass: "text-red-300",
-    borderClass: "border-red-800",
+    cardClass: "bg-red-950/40 backdrop-blur-md shadow-[0_0_30px_rgba(220,38,38,0.25)]",
+    iconClass: "text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.5)]",
+    countClass: "text-red-300 drop-shadow-[0_0_12px_rgba(248,113,113,0.4)]",
+    borderClass: "border-red-500/50",
     getCount: (s) => s.high,
   },
   {
@@ -43,10 +43,10 @@ const TIERS: TierConfig[] = [
     label: "Medium Risk",
     description: "Elevated risk factors — schedule proactive outreach soon.",
     Icon: AlertCircle,
-    cardClass: "bg-amber-950/90 backdrop-blur-sm",
-    iconClass: "text-amber-400",
-    countClass: "text-amber-300",
-    borderClass: "border-amber-800",
+    cardClass: "bg-amber-950/40 backdrop-blur-md shadow-[0_0_30px_rgba(217,119,6,0.25)]",
+    iconClass: "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]",
+    countClass: "text-amber-300 drop-shadow-[0_0_12px_rgba(251,191,36,0.4)]",
+    borderClass: "border-amber-500/50",
     getCount: (s) => s.medium,
   },
   {
@@ -54,10 +54,10 @@ const TIERS: TierConfig[] = [
     label: "Low Risk",
     description: "On track — routine follow-up cadence is sufficient.",
     Icon: CheckCircle2,
-    cardClass: "bg-teal-950/90 backdrop-blur-sm",
-    iconClass: "text-teal-400",
-    countClass: "text-teal-300",
-    borderClass: "border-teal-800",
+    cardClass: "bg-teal-950/40 backdrop-blur-md shadow-[0_0_30px_rgba(13,148,136,0.25)]",
+    iconClass: "text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]",
+    countClass: "text-teal-300 drop-shadow-[0_0_12px_rgba(45,212,191,0.4)]",
+    borderClass: "border-teal-500/50",
     getCount: (s) => s.low,
   },
   {
@@ -65,10 +65,10 @@ const TIERS: TierConfig[] = [
     label: "Insufficient History",
     description: "Fewer than 2 appointments recorded — cannot yet be scored.",
     Icon: HelpCircle,
-    cardClass: "bg-slate-800/90 backdrop-blur-sm",
-    iconClass: "text-slate-400",
-    countClass: "text-slate-300",
-    borderClass: "border-slate-700",
+    cardClass: "bg-slate-900/40 backdrop-blur-md shadow-[0_0_30px_rgba(148,163,184,0.15)]",
+    iconClass: "text-slate-400 drop-shadow-[0_0_8px_rgba(148,163,184,0.5)]",
+    countClass: "text-slate-300 drop-shadow-[0_0_12px_rgba(148,163,184,0.4)]",
+    borderClass: "border-slate-500/50",
     getCount: (s) => s.insufficientHistory,
   },
 ];
@@ -105,28 +105,28 @@ export default function RiskFactorShowcase() {
         {TIERS.map((t) => (
           <Card
             key={t.tier}
-            customClass={`${t.cardClass} ${t.borderClass} p-6 flex flex-col justify-between`}
+            customClass={`${t.cardClass} border ${t.borderClass} p-6 flex flex-col justify-between transition-transform duration-300 hover:scale-[1.02]`}
           >
             <div className="flex items-start justify-between">
               <div>
-                <div className={`text-xs font-semibold uppercase tracking-widest mb-1 ${t.iconClass}`}>
+                <div className={`text-sm font-bold uppercase tracking-widest mb-1 ${t.iconClass}`}>
                   {t.label}
                 </div>
-                <p className="text-slate-300 text-sm leading-relaxed max-w-[220px]">
+                <p className="text-white/80 text-sm leading-relaxed max-w-[220px]">
                   {t.description}
                 </p>
               </div>
-              <t.Icon size={28} className={`${t.iconClass} shrink-0 ml-2 mt-0.5`} />
+              <t.Icon size={34} className={`${t.iconClass} shrink-0 ml-2 mt-0.5`} />
             </div>
 
             <div className="flex items-end justify-between mt-4">
               <div>
-                <div className={`text-4xl font-black tabular-nums ${t.countClass}`}>
+                <div className={`text-5xl font-black tabular-nums tracking-tighter ${t.countClass}`}>
                   {stats ? t.getCount(stats) : "—"}
                 </div>
-                <div className="text-slate-500 text-xs mt-0.5">patients</div>
+                <div className="text-white/50 text-xs mt-1 uppercase tracking-wider font-semibold">patients</div>
               </div>
-              <div className={`text-xs font-medium px-3 py-1 rounded-full border ${t.borderClass} ${t.iconClass} opacity-70`}>
+              <div className={`text-xs font-semibold px-3 py-1.5 rounded-full border ${t.borderClass} ${t.iconClass} bg-white/5 backdrop-blur-sm`}>
                 Click to filter →
               </div>
             </div>

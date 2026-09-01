@@ -41,26 +41,26 @@ export default function SummaryCards({ stats }: { stats: StatsResponse | null })
     {
       label: "High Risk",
       value: stats?.high ?? 0,
-      colorClass: "text-risk-high",
-      bgClass: "bg-red-50 border-red-100",
+      colorClass: "text-red-400",
+      bgClass: "bg-red-900/20 border-red-500/30",
     },
     {
       label: "Medium Risk",
       value: stats?.medium ?? 0,
-      colorClass: "text-risk-medium",
-      bgClass: "bg-amber-50 border-amber-100",
+      colorClass: "text-amber-400",
+      bgClass: "bg-amber-900/20 border-amber-500/30",
     },
     {
       label: "Low Risk",
       value: stats?.low ?? 0,
-      colorClass: "text-risk-low",
-      bgClass: "bg-teal-50 border-teal-100",
+      colorClass: "text-teal-400",
+      bgClass: "bg-teal-900/20 border-teal-500/30",
     },
     {
       label: "Insufficient History",
       value: stats?.insufficientHistory ?? 0,
-      colorClass: "text-slate-500",
-      bgClass: "bg-slate-50 border-slate-200",
+      colorClass: "text-white/60",
+      bgClass: "bg-white/5 border-white/10",
     },
   ];
 
@@ -77,7 +77,7 @@ export default function SummaryCards({ stats }: { stats: StatsResponse | null })
           <div className={`text-2xl font-bold ${c.colorClass}`}>
             {stats !== null ? <CountUp to={c.value} /> : "—"}
           </div>
-          <div className="text-sm text-slate-600 mt-0.5">{c.label}</div>
+          <div className="text-sm text-white/60 mt-0.5">{c.label}</div>
         </motion.div>
       ))}
     </div>

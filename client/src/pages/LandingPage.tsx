@@ -1,8 +1,8 @@
 /**
  * LandingPage — "/"
- * The showcase entry point. Three sections:
- *  1. Hero   — animated headline + CardSwap risk tier carousel
- *  2. Journey — scroll-drawn SVG scoring pipeline
+ * Three sections:
+ *  1. Hero   — ParallaxAtmosphere backdrop + animated headline + CardSwap showcase
+ *  2. Journey — scroll-drawn SVG scoring pipeline (dark slate section)
  *  3. CTA    — call-to-action to open the dashboard
  */
 import { Link } from "react-router-dom";
@@ -11,6 +11,10 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import Header from "../components/Header";
 import RiskFactorShowcase from "../components/showcase/RiskFactorShowcase";
 import ScoringJourney from "../components/showcase/ScoringJourney";
+import ParallaxAtmosphere from "../components/showcase/ParallaxAtmosphere";
+import HospitalLoader from "../components/showcase/HospitalLoader";
+import { useEffect, useState } from "react";
+import { StatsResponse } from "../types";
 
 /* Word-by-word headline reveal */
 const HEADLINE = "Know who needs you next.";
@@ -19,10 +23,7 @@ const words = HEADLINE.split(" ");
 const containerVariants = {
   hidden: {},
   show: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
+    transition: { staggerChildren: 0.1, delayChildren: 0.3 },
   },
 };
 
@@ -37,35 +38,55 @@ const wordVariants = {
 };
 
 export default function LandingPage() {
-  return (
-    <div className="min-h-screen landing-dark landing-grid-bg text-white">
-      {/* Transparent header on the dark hero */}
-      <Header transparent />
+  // Brief stats-resolving state — shows HospitalLoader until /api/stats returns
+  const [statsReady, setStatsReady] = useState(false);
 
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((_data: StatsResponse) => setStatsReady(true))
+      .catch(() => setStatsReady(true)); // on error, skip loader
+    // Short safety timeout so the page doesn't wait forever
+    const t = setTimeout(() => setStatsReady(true), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!statsReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <HospitalLoader />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full text-white">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <Header />
+
       <section
-        className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-20 overflow-hidden"
+        className="relative flex flex-col items-center justify-center px-6 py-20 overflow-hidden"
+        style={{ minHeight: "calc(100vh - 73px)" }}
         aria-label="Hero"
       >
-        {/* Radial accent glows */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-teal-900/25 blur-3xl pointer-events-none" />
-        <div className="absolute top-2/3 left-1/4 w-[300px] h-[300px] rounded-full bg-indigo-900/20 blur-3xl pointer-events-none" />
+        {/* Extra pink glow overlays — complement the parallax */}
+        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-brand/10 blur-3xl pointer-events-none" />
 
         <div className="relative max-w-5xl w-full mx-auto grid lg:grid-cols-2 gap-12 items-center">
           {/* Left: copy */}
           <div>
-            {/* Pill badge */}
+            {/* Pill badge — brand themed */}
             <motion.div
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full border border-teal-800 bg-teal-900/40 text-teal-300 text-xs font-semibold"
+              className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full border border-brand/40 bg-brand/10 text-brand text-xs font-semibold shadow-[0_0_15px_rgba(247,163,180,0.2)]"
             >
               <Sparkles size={13} />
               Rule-based · Fully explainable · Zero ML
             </motion.div>
 
-            {/* Animated headline */}
+            {/* Animated headline — brand gradient */}
             <motion.h1
               variants={containerVariants}
               initial="hidden"
@@ -88,7 +109,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.9 }}
-              className="text-slate-300 text-lg leading-relaxed mb-8 max-w-md"
+              className="text-white/70 text-lg leading-relaxed mb-8 max-w-md"
             >
               Transparent, explainable patient follow-up risk ranking — no black
               box. Every score is traceable to a specific plain-English reason.
@@ -100,23 +121,24 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 1.1 }}
               className="flex flex-wrap gap-4"
             >
+              {/* Primary CTA — brand.dark bg, white text (≥7:1) */}
               <Link
                 to="/dashboard"
                 id="hero-open-dashboard"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-bold text-sm transition-all shadow-lg shadow-teal-900/40 hover:shadow-teal-800/60 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-dark hover:bg-brand-mid text-white font-bold text-sm transition-all shadow-lg shadow-brand-dark/40 hover:-translate-y-0.5"
               >
                 Open Dashboard
                 <ArrowRight size={16} />
               </Link>
               <a
                 href="#scoring"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 font-semibold text-sm transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white/80 hover:text-white hover:border-white/40 font-semibold text-sm transition-all"
               >
                 See how it works
               </a>
             </motion.div>
 
-            {/* Stats strip */}
+            {/* Stats strip — brand accent numbers */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -129,8 +151,9 @@ export default function LandingPage() {
                 { value: "0", label: "ML black boxes" },
               ].map((s) => (
                 <div key={s.label}>
-                  <div className="text-2xl font-black text-teal-300">{s.value}</div>
-                  <div className="text-xs text-slate-500">{s.label}</div>
+                  {/* brand.DEFAULT on dark parallax bg: #f7a3b4 on ~#1a0a10 ≈ 6:1 ✅ */}
+                  <div className="text-2xl font-black text-brand">{s.value}</div>
+                  <div className="text-xs text-white/40">{s.label}</div>
                 </div>
               ))}
             </motion.div>
@@ -144,22 +167,26 @@ export default function LandingPage() {
             className="flex flex-col items-center gap-4"
           >
             <RiskFactorShowcase />
-            <p className="text-slate-500 text-xs mt-2 text-center max-w-[300px]">
-              Click a tier card to jump straight to that filtered view in the dashboard.
+            <p className="text-white/40 text-xs mt-2 text-center max-w-[300px]">
+              Click a tier card to jump to that filtered view.
               Cards auto-rotate — hover to pause.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Scoring Journey ──────────────────────────────────────────────── */}
-      <div id="scoring">
+      {/* ── Scoring Journey (transparent on parallax bg) ─────────────────── */}
+      <div id="scoring" className="w-full">
         <ScoringJourney />
       </div>
 
-      {/* ── Call to Action ───────────────────────────────────────────────── */}
-      <section className="py-24 px-6 text-center relative overflow-hidden" aria-label="Call to action">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/0 via-teal-950/30 to-slate-900/0 pointer-events-none" />
+      {/* ── CTA section ──────────────────────────────────────────────────── */}
+      <section
+        className="py-24 px-6 text-center relative overflow-hidden"
+        aria-label="Call to action"
+      >
+        {/* Brand glow wash */}
+        <div className="absolute inset-0  pointer-events-none" />
         <div className="relative max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -167,17 +194,18 @@ export default function LandingPage() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            <h2 className="text-4xl sm:text-5xl font-black mb-4 text-white">
               Ready to see your list?
             </h2>
-            <p className="text-slate-400 mb-10 text-lg">
+            <p className="text-white/60 mb-10 text-lg">
               18 synthetic patients are already loaded — open the dashboard and
               explore who needs you most.
             </p>
+            {/* brand.dark bg, white text ≥7:1 ✅ */}
             <Link
               to="/dashboard"
               id="cta-open-dashboard"
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-teal-500 hover:bg-teal-400 text-white font-black text-lg transition-all shadow-2xl shadow-teal-900/50 hover:shadow-teal-800/70 hover:-translate-y-1"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-brand-dark hover:bg-brand-mid text-white font-black text-lg transition-all shadow-2xl shadow-brand-dark/40 hover:-translate-y-1"
             >
               Open the Dashboard
               <ArrowRight size={20} />
@@ -186,8 +214,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/10 py-8 text-center text-slate-600 text-xs">
+      {/* ── Footer ────────────────────────────────────────────────────────── */}
+      <footer className="border-t border-white/10 py-8 text-center text-white/40 text-xs">
         Thrive — Patient Follow-up Risk Predictor · Transparent rule engine · No ML
       </footer>
     </div>

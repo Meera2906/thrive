@@ -2,15 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Clinical severity CSS vars (UNCHANGED — never pink) ──────────────── */
 :root {
-  --color-high: #dc2626;
-  --color-high-bg: #fef2f2;
-  --color-medium: #d97706;
-  --color-medium-bg: #fffbeb;
-  --color-low: #0d9488;
-  --color-low-bg: #f0fdfa;
-  --color-unknown: #6b7280;
+  --color-high:       #dc2626;
+  --color-high-bg:    #fef2f2;
+  --color-medium:     #d97706;
+  --color-medium-bg:  #fffbeb;
+  --color-low:        #0d9488;
+  --color-low-bg:     #f0fdfa;
+  --color-unknown:    #6b7280;
   --color-unknown-bg: #f3f4f6;
+
+  /* Brand pink tokens */
+  --brand:       #f7a3b4;
+  --brand-dark:  #9d1c47;
+  --brand-mid:   #d4607e;
+  --brand-light: #fde8ed;
+  --brand-muted: #fdf0f3;
 }
 
 body {
@@ -18,7 +26,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Tier badge shell ─────────────────────────────────────────────────────── */
+/* ─── Tier badges — clinical colours PRESERVED ─────────────────────────── */
 
 .tier-badge {
   display: inline-flex;
@@ -31,7 +39,6 @@ body {
   white-space: nowrap;
 }
 
-/* Soft gradient fills — same hue as before, slightly richer */
 .tier-badge-high {
   color: var(--color-high);
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
@@ -52,23 +59,37 @@ body {
   background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
 }
 
-/* ─── Landing page helpers ─────────────────────────────────────────────────── */
+/* ─── Landing page — pink twilight palette ──────────────────────────────── */
 
+/* Dark base removed — ParallaxAtmosphere now handles the hero bg.
+   ScoringJourney + CTA sections still use dark slate. */
 .landing-dark {
   background: linear-gradient(160deg, #0f172a 0%, #0a1628 60%, #0d1f3c 100%);
 }
 
+/* Headline gradient: white → soft blush → brand pink */
 .landing-hero-text {
-  background: linear-gradient(135deg, #ffffff 0%, #99f6e4 50%, #0d9488 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #fde8ed 45%, #f7a3b4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Subtle grid-line overlay for the dark hero */
+/* Grid lines in pink/rose instead of indigo */
 .landing-grid-bg {
   background-image:
-    linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(247, 163, 180, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(247, 163, 180, 0.05) 1px, transparent 1px);
   background-size: 48px 48px;
+}
+
+/* ─── Hospital Loader ───────────────────────────────────────────────────── */
+
+/* Streak lines — using brand.light so they read as ambient, not garish */
+.loader-streak {
+  position: absolute;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, var(--brand-light));
+  opacity: 0;
 }

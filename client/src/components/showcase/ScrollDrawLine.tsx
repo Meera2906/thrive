@@ -68,10 +68,11 @@ export default function ScrollDrawLine({
       const rect = section!.getBoundingClientRect();
       const viewportH = window.innerHeight;
 
-      // progress 0 when section bottom enters viewport → 1 when section top reaches viewport top
+      // progress 0 when section top enters viewport from bottom
+      // progress 1 when section bottom enters viewport from bottom
       const progress = Math.min(
         1,
-        Math.max(0, (viewportH - rect.top) / (rect.height + viewportH))
+        Math.max(0, (viewportH - rect.top) / rect.height)
       );
 
       path!.style.strokeDashoffset = `${totalLength * (1 - progress)}`;

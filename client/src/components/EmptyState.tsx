@@ -11,13 +11,13 @@ interface Props {
 export default function EmptyState({ hasFilters, onClearFilters }: Props) {
   return (
     <div
-      className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center"
+      className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm px-6 py-12 text-center"
       role="status"
       aria-live="polite"
     >
       {/* Inline SVG — clipboard with a magnifying glass */}
       <svg
-        className="mx-auto mb-5 text-slate-300"
+        className="mx-auto mb-5 text-white/20"
         width="64"
         height="64"
         viewBox="0 0 64 64"
@@ -57,10 +57,10 @@ export default function EmptyState({ hasFilters, onClearFilters }: Props) {
         <line x1="46" y1="45" x2="46" y2="51" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
 
-      <h2 className="text-base font-semibold text-slate-700 mb-1">
+      <h2 className="text-base font-semibold text-white mb-1">
         {hasFilters ? "No patients match your filters" : "No patients found"}
       </h2>
-      <p className="text-sm text-slate-400 mb-5 max-w-xs mx-auto">
+      <p className="text-sm text-white/60 mb-5 max-w-xs mx-auto">
         {hasFilters
           ? "Try adjusting your search term or tier filter to see more results."
           : "No patient records are available right now. Check back later or add records via the API."}
@@ -70,7 +70,7 @@ export default function EmptyState({ hasFilters, onClearFilters }: Props) {
         <button
           id="clear-filters-btn"
           onClick={onClearFilters}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-colors"
         >
           Clear filters
         </button>

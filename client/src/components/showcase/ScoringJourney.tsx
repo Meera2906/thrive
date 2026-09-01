@@ -115,12 +115,12 @@ export default function ScoringJourney() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 overflow-hidden bg-slate-900/80"
+      className="relative py-24 overflow-hidden bg-white-900/0"
       aria-label="Scoring pipeline walkthrough"
     >
       {/* Faint radial glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-teal-900/20 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white-900/20 blur-3xl" />
       </div>
 
       <div className="relative max-w-5xl mx-auto px-6">
@@ -139,7 +139,7 @@ export default function ScoringJourney() {
             <ScrollDrawLine
               d={PATH_D}
               viewBox="0 0 800 420"
-              strokeColor="#0d9488"
+              strokeColor="var(--brand)"
               strokeWidth={2.5}
               width="100%"
               height="100%"
@@ -180,6 +180,25 @@ export default function ScoringJourney() {
               </div>
             );
           })}
+        </div>
+
+        {/* End of Journey Summary / Decoration */}
+        <div 
+          className="mt-20 flex flex-col items-center justify-center text-center transition-all duration-700"
+          style={{
+            opacity: scrollProgress > 0.95 ? 1 : 0,
+            transform: scrollProgress > 0.95 ? "translateY(0)" : "translateY(20px)"
+          }}
+        >
+          <div className="w-16 h-16 rounded-full bg-brand/10 border border-brand/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(247,163,180,0.2)] animate-pulse">
+            <ArrowRightCircle size={24} className="text-brand" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2">
+            The Result: A Prioritized List
+          </h3>
+          <p className="text-white/60 text-sm max-w-md mx-auto">
+            Our algorithm translates these 6 factors into an actionable risk tier. You focus on patient care; the engine ensures no one falls through the cracks.
+          </p>
         </div>
       </div>
     </section>

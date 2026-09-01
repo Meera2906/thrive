@@ -5,7 +5,7 @@ import SummaryCards from "../components/SummaryCards";
 import PatientFilters from "../components/PatientFilters";
 import PatientList from "../components/PatientList";
 import PatientDetailModal from "../components/PatientDetailModal";
-import LoadingState from "../components/LoadingState";
+import HospitalLoader from "../components/showcase/HospitalLoader";
 import ErrorState from "../components/ErrorState";
 import EmptyState from "../components/EmptyState";
 import { PatientWithRisk, SortKey, StatsResponse, TierFilter } from "../types";
@@ -127,7 +127,7 @@ export default function DashboardPage() {
   const hasActiveFilters = query.trim() !== "" || tier !== "All";
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen w-full text-white">
       {/* Modal overlay — rendered at top level to cover everything */}
       <PatientDetailModal
         patient={selectedPatient}
@@ -148,7 +148,11 @@ export default function DashboardPage() {
           onSortKeyChange={setSortKey}
         />
 
-        {loading && <LoadingState />}
+        {loading && (
+          <div className="py-20">
+            <HospitalLoader />
+          </div>
+        )}
 
         {error && !loading && (
           <ErrorState error={error} onRetry={() => setRetryCount((c) => c + 1)} />

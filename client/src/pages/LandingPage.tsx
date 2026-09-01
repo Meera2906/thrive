@@ -163,11 +163,11 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-center gap-4"
           >
             <RiskFactorShowcase />
-            <p className="text-white/40 text-xs mt-2 text-center max-w-[300px]">
+            <p className="text-white/40 text-xs mt-12 ml-16 text-center max-w-[300px]">
               Click a tier card to jump to that filtered view.
               Cards auto-rotate — hover to pause.
             </p>

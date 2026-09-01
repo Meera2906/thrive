@@ -92,11 +92,11 @@ export default function RiskFactorShowcase() {
   return (
     <div className="flex justify-center items-center">
       <CardSwap
-        width={340}
-        height={230}
+        width={420}
+        height={320}
         cardDistance={55}
         verticalDistance={12}
-        delay={4}
+        delay={2.5}
         pauseOnHover
         skewAmount={5}
         easing="elastic.out(1,0.5)"
